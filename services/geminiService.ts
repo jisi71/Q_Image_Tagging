@@ -6,13 +6,27 @@ let aiInstance: GoogleGenAI | null = null;
 
 const getAI = () => {
     if (!aiInstance) {
-        const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+        // 1. Try to get key from localStorage (User-defined in browser)
+        const userApiKey = localStorage.getItem('GEMINI_API_KEY');
+        
+        // 2. Fallback to environment variable (Fixed in deployment)
+        const envApiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+        
+        const apiKey = userApiKey || envApiKey;
+
         if (!apiKey) {
-            throw new Error("Missing Gemini API Key. Please set GEMINI_API_KEY in your environment variables.");
+            throw new Error("Missing Gemini API Key. Please set it in Settings (top right) or environment variables.");
         }
         aiInstance = new GoogleGenAI({ apiKey });
     }
     return aiInstance;
+};
+
+/**
+ * Resets the AI instance. Useful when the API key is changed in UI.
+ */
+export const resetAIInstance = () => {
+    aiInstance = null;
 };
 
 const MODEL_NAME = "gemini-2.5-flash"; // Excellent for vision tasks and speed/cost balance
