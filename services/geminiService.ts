@@ -1,8 +1,19 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { TagResponse } from "../types";
 
-// Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Lazy initialize Gemini Client
+let aiInstance: GoogleGenAI | null = null;
+
+const getAI = () => {
+    if (!aiInstance) {
+        const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            throw new Error("Missing Gemini API Key. Please set GEMINI_API_KEY in your environment variables.");
+        }
+        aiInstance = new GoogleGenAI({ apiKey });
+    }
+    return aiInstance;
+};
 
 const MODEL_NAME = "gemini-2.5-flash"; // Excellent for vision tasks and speed/cost balance
 
@@ -32,6 +43,7 @@ const fileToPart = (file: File): Promise<{ inlineData: { data: string; mimeType:
 export const generateImageTags = async (file: File): Promise<TagResponse> => {
   try {
     const imagePart = await fileToPart(file);
+    const ai = getAI();
 
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
