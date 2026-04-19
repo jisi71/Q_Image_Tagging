@@ -1,0 +1,6 @@
+{
+  "name": "图片打标Copy of TagMaster AI",
+  "description": "A powerful batch image tagging tool using Gemini Vision. Automatically generates accurate English tags with Chinese translations, featuring an online editor and bulk export capabilities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
